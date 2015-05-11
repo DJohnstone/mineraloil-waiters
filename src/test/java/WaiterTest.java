@@ -1,6 +1,7 @@
 import mineraloil.waiters.WaitCondition;
 import mineraloil.waiters.WaitConditionWithFailureAction;
 import mineraloil.waiters.WaitExpiredException;
+import mineraloil.waiters.WaiterImpl;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Assert;
@@ -19,6 +20,7 @@ public class WaiterTest {
     public ExpectedException thrown = ExpectedException.none();
 
     class TestException extends RuntimeException {};
+    class TestIgnoredException extends RuntimeException {};
 
     @Test
     public void waiterTimeout() {
@@ -44,6 +46,20 @@ public class WaiterTest {
         }.setTimeout(TimeUnit.SECONDS, 1)
          .throwExceptionOnFailure(new TestException())
          .waitUntilSatisfied();
+    }
+
+    @Test
+    public void trapCustomExceptions() {
+        WaiterImpl.addExpectedException(TestIgnoredException.class);
+
+        thrown.expect(WaitExpiredException.class);
+
+        new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                throw new TestIgnoredException();
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1).waitUntilSatisfied();
     }
 
     @Test

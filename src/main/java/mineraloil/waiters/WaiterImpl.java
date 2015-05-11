@@ -1,10 +1,10 @@
 package mineraloil.waiters;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +22,7 @@ public class WaiterImpl<T extends Waiter> {
     private long waitTimeElapsed;
     private static int activeWaiterCount = 0;
 
-    @Setter
-    private static List<Exception> expectedExceptions;
+    private static List<Class> expectedExceptions = new ArrayList<>();
 
     @Getter
     public boolean successful;
@@ -34,6 +33,10 @@ public class WaiterImpl<T extends Waiter> {
     public WaiterImpl(T waiter) {
         caller = Thread.currentThread().getStackTrace()[3].toString().replaceAll("^[^\\(]+", "");
         this.waiter = waiter;
+    }
+
+    public static void addExpectedException(Class exceptionClass) {
+        expectedExceptions.add(exceptionClass);
     }
 
     public void setResult(Object obj) {
@@ -145,7 +148,7 @@ public class WaiterImpl<T extends Waiter> {
             activeWaiterCount--;
             trackException(e);
         } catch (Exception e) {
-            if (expectedExceptions.stream().noneMatch(exception -> exception.getClass().isAssignableFrom(e.getClass()))) {
+            if (expectedExceptions.stream().noneMatch(exception -> e.getClass().isAssignableFrom(exception))) {
                 activeWaiterCount--;
                 throw e;
             }
