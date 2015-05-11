@@ -14,7 +14,6 @@ public abstract class WaitConditionWithFailureAction implements WaiterWithFailur
 
     public WaitConditionWithFailureAction() {
         waiter = new WaiterImpl<>(this);
-
     }
 
     public boolean checkWaitCondition(long waitTimeElapsed, int timeout) {

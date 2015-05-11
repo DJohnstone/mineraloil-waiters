@@ -15,9 +15,10 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.Mockito.mock;
 
 public class WaiterTest {
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    class TestException extends RuntimeException {};
 
     @Test
     public void waiterTimeout() {
@@ -32,6 +33,20 @@ public class WaiterTest {
     }
 
     @Test
+    public void throwExceptionOnFailure() {
+        thrown.expect(TestException.class);
+
+        new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                return false;
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1)
+         .throwExceptionOnFailure(new TestException())
+         .waitUntilSatisfied();
+    }
+
+    @Test
     public void waiterTimeoutIgnored() {
         Instant start = Instant.now();
         new WaitCondition() {
@@ -42,6 +57,20 @@ public class WaiterTest {
         }.setTimeout(TimeUnit.SECONDS, 1).waitAndIgnoreExceptions();
         Instant end = Instant.now();
         Assert.assertTrue((int) new Duration(start, end).getStandardSeconds() < 2);
+    }
+
+    @Test
+    public void pollInterval() {
+        Instant start = Instant.now();
+        new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                return false;
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1).setPollInterval(TimeUnit.SECONDS, 3).waitAndIgnoreExceptions();
+        Instant end = Instant.now();
+        int duration = (int) new Duration(start, end).getStandardSeconds();
+        Assert.assertTrue(String.format("Took %s seconds", duration), duration > 3 && duration < 7);
     }
 
     @Test
@@ -86,4 +115,39 @@ public class WaiterTest {
         }.setTimeout(TimeUnit.SECONDS, 1).waitAndIgnoreExceptions();
         Mockito.verify(failureAction, new AtLeast(1)).doSomething();
     }
+
+    @Test
+    public void getResult() {
+        int result = (int) new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                setResult(1);
+                return false;
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1).waitAndIgnoreExceptions().getResult();
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void getSuccessFalse() {
+        boolean result = new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                return false;
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1).waitAndIgnoreExceptions().isSuccessful();
+        Assert.assertFalse(result);
+    }
+
+    @Test
+    public void getSuccessTrue() {
+        boolean result = new WaitCondition() {
+            @Override
+            public boolean isSatisfied() {
+                return true;
+            }
+        }.setTimeout(TimeUnit.SECONDS, 1).waitAndIgnoreExceptions().isSuccessful();
+        Assert.assertTrue(result);
+    }
+
 }
