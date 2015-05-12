@@ -57,11 +57,6 @@ public class WaiterImpl<T extends Waiter> {
         return this;
     }
 
-    public WaiterImpl<T> expectedTimeElapsed(int expectedTimeElapsed) {
-        this.expectedTimeElapsed = expectedTimeElapsed;
-        return this;
-    }
-
     public WaiterImpl<T> throwExceptionOnFailure(RuntimeException exception) {
         this.exception = exception;
         return this;
@@ -133,12 +128,7 @@ public class WaiterImpl<T extends Waiter> {
         try {
             waitTimeElapsed = System.currentTimeMillis() - startTime;
             boolean success = waiter.checkWaitCondition(waitTimeElapsed, timeout);
-            if (success) {
-                if (expectedTimeElapsed != 0 && waitTimeElapsed > expectedTimeElapsed) {
-                    logger.warn(String.format("Wait time exceeded threshold. Expected %s, but took %s", expectedTimeElapsed, waitTimeElapsed));
-                }
-                return true;
-            }
+            if (success) return true;
             Thread.sleep(pollInterval);
         } catch (InterruptedException e) {
             activeWaiterCount--;
