@@ -28,7 +28,7 @@ Feature branches? [feature/]
 Release branches? [release/] rel/
 Hotfix branches? [hotfix/] 
 Support branches? [support/] 
-Version tag prefix? [] serialization-
+Version tag prefix? [] waiters-
 $
 ```
 
