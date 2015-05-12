@@ -25,7 +25,9 @@ public abstract class WaitConditionWithFailureAction implements WaiterWithFailur
         }
 
         boolean result = isSatisfied();
-        logWaiterState(waitTimeElapsed, timeout, result, waiterProgressPercentage);
+        if (!result) {
+            logWaiterState(waitTimeElapsed, timeout, result, waiterProgressPercentage);
+        }
         return result;
     }
 
