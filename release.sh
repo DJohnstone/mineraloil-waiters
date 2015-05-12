@@ -20,7 +20,7 @@ if [[ "$releaseDiff" != "" ]]; then
     exit 1
 fi
 
-parent_pom=api-model-parent/pom.xml
+parent_pom=pom.xml
 # Create environment variables for release version and snapshot
 export RELEASE="$1"
 export SNAPSHOT="$2"
