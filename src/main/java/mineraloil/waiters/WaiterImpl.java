@@ -148,7 +148,7 @@ public class WaiterImpl<T extends Waiter> {
             activeWaiterCount--;
             trackException(e);
         } catch (Exception e) {
-            if (expectedExceptions.stream().noneMatch(exception -> e.getClass().isAssignableFrom(exception))) {
+            if (expectedExceptions.size() == 0 || expectedExceptions.stream().noneMatch(exception -> e.getClass().isAssignableFrom(exception))) {
                 activeWaiterCount--;
                 throw e;
             }
