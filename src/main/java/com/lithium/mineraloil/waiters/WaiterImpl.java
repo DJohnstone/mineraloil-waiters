@@ -63,31 +63,38 @@ public class WaiterImpl<T extends Waiter> {
     }
 
     public WaiterImpl<T> waitAndIgnoreExceptions() {
-        activeWaiterCount ++;
-        logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
         try {
-            waitUntilSatisfied(false);
-        } catch (WaitExpiredException e) {
-            // ignore
+            activeWaiterCount++;
+            logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
+            try {
+                waitUntilSatisfied(false);
+            } catch (WaitExpiredException e) {
+                // ignore
+            }
+        } finally {
+            activeWaiterCount--;
         }
-        activeWaiterCount--;
         return this;
     }
 
     public WaiterImpl<T> waitUntilSatisfied() {
-        activeWaiterCount ++;
-        logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
-        WaiterImpl<T> waiter = waitUntilSatisfied(true);
-        activeWaiterCount--;
+        WaiterImpl<T> waiter = null;
+        try {
+            activeWaiterCount++;
+            logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
+            waiter = waitUntilSatisfied(true);
+        } finally {
+            activeWaiterCount--;
+        }
         return waiter;
 
     }
 
     private String getIndentationMarker() {
-        if (activeWaiterCount == 1) {
+        if (activeWaiterCount <= 1) {
             return "";
         } else {
-            return new String(new char[activeWaiterCount-1]).replace("\0", "\t");
+            return new String(new char[activeWaiterCount - 1]).replace("\0", "\t");
         }
     }
 
@@ -96,7 +103,7 @@ public class WaiterImpl<T extends Waiter> {
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + timeout) {
             successful = performWait(startTime);
-            if (successful){
+            if (successful) {
                 break;
             }
         }
@@ -128,18 +135,17 @@ public class WaiterImpl<T extends Waiter> {
         try {
             waitTimeElapsed = System.currentTimeMillis() - startTime;
             boolean success = waiter.checkWaitCondition(waitTimeElapsed, timeout);
-            if (success) return true;
+            if (success) {
+                return true;
+            }
             Thread.sleep(pollInterval);
         } catch (InterruptedException e) {
-            activeWaiterCount--;
             e.printStackTrace();
             return true;
         } catch (WaitExpiredException e) { // catch case where an inner waiter fails
-            activeWaiterCount--;
             trackException(e);
         } catch (Exception e) {
             if (expectedExceptions.size() == 0 || expectedExceptions.stream().noneMatch(exception -> e.getClass().isAssignableFrom(exception))) {
-                activeWaiterCount--;
                 throw e;
             }
         }
