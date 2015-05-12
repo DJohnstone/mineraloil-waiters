@@ -1,4 +1,4 @@
-package mineraloil.waiters;
+package com.lithium.mineraloil.waiters;
 
 import lombok.Delegate;
 

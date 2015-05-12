@@ -1,4 +1,4 @@
-package mineraloil.waiters;
+package com.lithium.mineraloil.waiters;
 
 import lombok.Getter;
 import org.slf4j.Logger;
