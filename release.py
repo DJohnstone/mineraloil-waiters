@@ -4,7 +4,7 @@ import xml.etree.ElementTree as etree
 import re
 
 root = etree.parse("pom.xml")
-version = root.find('./{http://maven.apache.org/POM/4.0.0}parent/{http://maven.apache.org/POM/4.0.0}version').text
+version = root.find('./{http://maven.apache.org/POM/4.0.0}version').text
 verGroups = re.match('(\d+)\.(\d+)\.?(\d+)?-SNAPSHOT', version)
 currMajor = int(verGroups.group(1))
 currMinor = int(verGroups.group(2))
