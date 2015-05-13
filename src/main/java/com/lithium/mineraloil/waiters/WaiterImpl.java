@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class WaiterImpl<T extends Waiter> {
@@ -18,11 +18,10 @@ public class WaiterImpl<T extends Waiter> {
     private int pollInterval = (int) TimeUnit.MILLISECONDS.toMillis(100);
     private Object result;
     private RuntimeException exception;
-    private int expectedTimeElapsed;
     private long waitTimeElapsed;
     private static int activeWaiterCount = 0;
 
-    private static List<Class> expectedExceptions = new ArrayList<>();
+    private static Set<Class> expectedExceptions = new HashSet<>();
 
     @Getter
     public boolean successful;
