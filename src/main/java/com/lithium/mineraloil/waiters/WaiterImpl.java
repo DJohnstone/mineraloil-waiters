@@ -64,7 +64,7 @@ public class WaiterImpl<T extends Waiter> {
     public WaiterImpl<T> waitAndIgnoreExceptions() {
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter called from %s", getIndentationMarker(), caller));
+            logger.info(String.format("%sWaiter called from %s, %s ms", getIndentationMarker(), caller, timeout));
             try {
                 waitUntilSatisfied(false);
             } catch (WaitExpiredException e) {
@@ -80,7 +80,7 @@ public class WaiterImpl<T extends Waiter> {
         WaiterImpl<T> waiter = null;
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter called from %s", getIndentationMarker(), caller));
+            logger.info(String.format("%sWaiter called from %s, %s ms", getIndentationMarker(), caller, timeout));
             waiter = waitUntilSatisfied(true);
         } finally {
             activeWaiterCount--;
