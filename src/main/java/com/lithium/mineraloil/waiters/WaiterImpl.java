@@ -80,7 +80,7 @@ public class WaiterImpl<T extends Waiter> {
         WaiterImpl<T> waiter = null;
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter started from %s", getIndentationMarker(), caller));
+            logger.info(String.format("%sWaiter started %s", getIndentationMarker(), caller));
             waiter = waitUntilSatisfied(true);
         } finally {
             activeWaiterCount--;
