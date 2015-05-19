@@ -20,18 +20,14 @@ public abstract class WaitConditionWithFailureAction implements WaiterWithFailur
         // try the onFailure if we've been in in this loop more than 20% of the allotted time
         double waiterProgressPercentage = ((double) waitTimeElapsed / (double) timeout) * 100;
         if (waiterProgressPercentage > waitTimeBeforeExecutingFailureAction) {
-            logger.info(String.format("...running failure action: %s, timeout: %s, progress: %.2f", waitTimeElapsed, timeout, waiterProgressPercentage));
+            logger.info(String.format("waiter progress: %.2f%% (running failure action)", waiterProgressPercentage));
             onFailureAction();
         }
 
         boolean result = isSatisfied();
         if (!result) {
-            logWaiterState(waitTimeElapsed, timeout, result, waiterProgressPercentage);
+            logger.info(String.format("waiter progress: %.2f%%", waiterProgressPercentage));
         }
         return result;
-    }
-
-    private void logWaiterState(long waitTimeElapsed, int timeout, boolean result, double waiterProgressPercentage) {
-        logger.info(String.format("...waittimeElapsed: %s, timeout: %s, progress: %.2f", waitTimeElapsed, timeout, waiterProgressPercentage));
     }
 }

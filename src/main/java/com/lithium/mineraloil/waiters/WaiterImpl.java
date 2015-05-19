@@ -64,7 +64,7 @@ public class WaiterImpl<T extends Waiter> {
     public WaiterImpl<T> waitAndIgnoreExceptions() {
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
+            logger.info(String.format("%sWaiter started %s", getIndentationMarker(), caller));
             try {
                 waitUntilSatisfied(false);
             } catch (WaitExpiredException e) {
@@ -80,7 +80,7 @@ public class WaiterImpl<T extends Waiter> {
         WaiterImpl<T> waiter = null;
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter started from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
+            logger.info(String.format("%sWaiter started from %s", getIndentationMarker(), caller));
             waiter = waitUntilSatisfied(true);
         } finally {
             activeWaiterCount--;
@@ -100,7 +100,9 @@ public class WaiterImpl<T extends Waiter> {
     private WaiterImpl<T> waitUntilSatisfied(boolean displayNestedExceptions) {
         successful = false;
         long startTime = System.currentTimeMillis();
+        int loopCount = 0;
         while (System.currentTimeMillis() < startTime + timeout) {
+            loopCount++;
             successful = performWait(startTime);
             if (successful) {
                 break;
@@ -108,11 +110,9 @@ public class WaiterImpl<T extends Waiter> {
         }
 
         if (!successful) {
-            // try one last time on failure to make sure we've at least tried a minimum of two times
-            successful = performWait(startTime);
+            if (loopCount < 2) successful = performWait(startTime); // try at least twice
 
             if (!successful) {
-                logger.info(String.format("%sWaiter ended from %s at %s", getIndentationMarker(), caller, System.currentTimeMillis()));
                 if (displayNestedExceptions && waiter instanceof WaitCondition && exceptions.size() > 0) {
                     int counter = 0;
                     for (Exception exception : exceptions.values()) {
@@ -120,13 +120,17 @@ public class WaiterImpl<T extends Waiter> {
                         logger.warn(String.format("Nested wait exception: (%s of %s): ", counter, exceptions.size()), exception);
                     }
                 }
+                logger.info(String.format("%s(%s ms)", getIndentationMarker(), (System.currentTimeMillis() - startTime)));
                 if (exception == null) {
                     throw new WaitExpiredException(String.format("Timed out in waiter in %s milliseconds", timeout));
                 } else {
                     throw exception;
                 }
             }
+        } else {
+            logger.info(String.format("%s(%s ms)", getIndentationMarker(), System.currentTimeMillis() - startTime));
         }
+
         return this;
     }
 
