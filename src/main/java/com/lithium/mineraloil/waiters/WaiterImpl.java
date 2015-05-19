@@ -64,7 +64,7 @@ public class WaiterImpl<T extends Waiter> {
     public WaiterImpl<T> waitAndIgnoreExceptions() {
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter started %s", getIndentationMarker(), caller));
+            logger.info(String.format("%sWaiter called from %s", getIndentationMarker(), caller));
             try {
                 waitUntilSatisfied(false);
             } catch (WaitExpiredException e) {
@@ -80,7 +80,7 @@ public class WaiterImpl<T extends Waiter> {
         WaiterImpl<T> waiter = null;
         try {
             activeWaiterCount++;
-            logger.info(String.format("%sWaiter started %s", getIndentationMarker(), caller));
+            logger.info(String.format("%sWaiter called from %s", getIndentationMarker(), caller));
             waiter = waitUntilSatisfied(true);
         } finally {
             activeWaiterCount--;
@@ -120,7 +120,6 @@ public class WaiterImpl<T extends Waiter> {
                         logger.warn(String.format("Nested wait exception: (%s of %s): ", counter, exceptions.size()), exception);
                     }
                 }
-                logger.info(String.format("%s(%s ms)", getIndentationMarker(), (System.currentTimeMillis() - startTime)));
                 if (exception == null) {
                     throw new WaitExpiredException(String.format("Timed out in waiter in %s milliseconds", timeout));
                 } else {
@@ -128,7 +127,6 @@ public class WaiterImpl<T extends Waiter> {
                 }
             }
         } else {
-            logger.info(String.format("%s(%s ms)", getIndentationMarker(), System.currentTimeMillis() - startTime));
         }
 
         return this;
