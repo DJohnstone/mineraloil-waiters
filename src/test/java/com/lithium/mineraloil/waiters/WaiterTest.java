@@ -1,7 +1,5 @@
-import com.lithium.mineraloil.waiters.WaitCondition;
-import com.lithium.mineraloil.waiters.WaitConditionWithFailureAction;
-import com.lithium.mineraloil.waiters.WaitExpiredException;
-import com.lithium.mineraloil.waiters.WaiterImpl;
+package com.lithium.mineraloil.waiters;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Assert;
