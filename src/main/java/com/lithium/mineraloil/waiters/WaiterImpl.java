@@ -13,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class WaiterImpl<T extends Waiter> {
     private final Logger logger = LoggerFactory.getLogger(WaiterImpl.class);
     private final T waiter;
-    private final String caller;
+    private final String callerClass;
+    private final String callerFileName;
     private int timeout = (int) TimeUnit.SECONDS.toMillis(20);
     private int pollInterval = (int) TimeUnit.MILLISECONDS.toMillis(100);
     private Object result;
@@ -30,7 +31,9 @@ public class WaiterImpl<T extends Waiter> {
     private Map<String, Exception> exceptions = new HashMap<>();
 
     public WaiterImpl(T waiter) {
-        caller = Thread.currentThread().getStackTrace()[3].toString().replaceAll("^[^\\(]+", "");
+        StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
+        callerClass = callStack[3].getClassName();
+        callerFileName = callStack[3].getFileName();
         this.waiter = waiter;
     }
 
@@ -77,11 +80,11 @@ public class WaiterImpl<T extends Waiter> {
     }
 
     private void logWaitEvent() {
-        if (activeWaiterCount <= 1) {
-            logger.info(String.format("Waiter called from %s, %s ms", caller, timeout));
+        if (activeWaiterCount <= 1 && !callerClass.contains("com.lithium.mineraloil.selenium")) {
+            logger.info(String.format("Waiter called from %s, %s ms", callerFileName, timeout));
         } else {
             String indentation = new String(new char[activeWaiterCount - 1]).replace("\0", "\t");
-            logger.debug(String.format("%sWaiter called from %s, %s ms", indentation, caller, timeout));
+            logger.debug(String.format("%sWaiter called from %s, %s ms", indentation, callerFileName, timeout));
         }
     }
 
