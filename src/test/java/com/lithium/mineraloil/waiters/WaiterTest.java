@@ -17,8 +17,12 @@ public class WaiterTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    class TestException extends RuntimeException {};
-    class TestIgnoredException extends RuntimeException {};
+    class TestException extends RuntimeException {
+        private static final long serialVersionUID = 11464659670706970L;
+    };
+    class TestIgnoredException extends RuntimeException {
+        private static final long serialVersionUID = -2681061731839891188L;
+    };
 
     @Test
     public void waiterTimeout() {

@@ -81,7 +81,7 @@ public class WaiterImpl<T extends Waiter> {
 
     private void logWaitEvent() {
         if (activeWaiterCount <= 1 && !callerClass.contains("com.lithium.mineraloil.selenium")) {
-            logger.info(String.format("Waiter called from %s, %s ms", callerFileName, timeout));
+            logger.debug(String.format("Waiter called from %s, %s ms", callerFileName, timeout));
         } else {
             String indentation = new String(new char[activeWaiterCount - 1]).replace("\0", "\t");
             logger.debug(String.format("%sWaiter called from %s, %s ms", indentation, callerFileName, timeout));
