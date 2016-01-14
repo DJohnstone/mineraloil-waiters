@@ -12,7 +12,7 @@
     <artifactId>mineraloil-waiters</artifactId>
     <name>mineraloil-waiters</name>
     <url>https://github.com/lithiumtech/mineraloil-waiters</url>
-    <version>0.1.17-SNAPSHOT</version>
+    <version>0.1.17</version>
     <packaging>jar</packaging>
 
     <description>
