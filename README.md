@@ -5,11 +5,11 @@ Easy way to add polling waits
 ### Maven 
 
 ```
-<dependency>
-    <groupId>com.lithium.mineraloil</groupId>
-    <artifactId>waiters</artifactId>
-    <version>0.1.14</version>
-</dependency>
+        <dependency>
+            <groupId>com.lithium.mineraloil</groupId>
+            <artifactId>mineraloil-waiters</artifactId>
+            <version>0.1.19</version>
+        </dependency>
 ```
 
 ### WaitCondition
