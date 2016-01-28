@@ -24,10 +24,20 @@ public abstract class WaitConditionWithFailureAction implements WaiterWithFailur
             onFailureAction();
         }
 
-        boolean result = isSatisfied();
+        boolean result = checkIsSatisfied();
         if (!result) {
             logger.info(String.format("waiter progress: %.2f%%", waiterProgressPercentage));
         }
         return result;
+    }
+
+    private boolean checkIsSatisfied() {
+        boolean isIt = false;
+        try {
+            isIt = isSatisfied();
+        } catch (Exception e) {
+            logger.info(String.format("Failure action caused by isSatified returning: %s", e.toString() ));
+        }
+        return isIt;
     }
 }
